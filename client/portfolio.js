@@ -5,9 +5,10 @@
 let currentProducts = [];
 let currentPagination = {};
 
-// inititiqte selectors
+// inititiate selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
+const selectBrand = document.querySelector('#brand-select');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 
@@ -96,6 +97,22 @@ const renderIndicators = pagination => {
   spanNbProducts.innerHTML = count;
 };
 
+/**
+ * Render brand selector
+ */
+const renderBrand = brand => {
+  const {currentPage, brandCount} = brand;
+  const options = Array.from(
+    {'length': brandCount},
+    (value, brandName) => `<option value="${brandName}">${brandName}</option>`
+  ).join('');
+
+  selectBrand.innerHTML = options;
+  selectBrand.selectedIndex = currentPage - 1;
+};
+
+
+
 const render = (products, pagination) => {
   renderProducts(products);
   renderPagination(pagination);
@@ -116,8 +133,19 @@ selectShow.addEventListener('change', event => {
     .then(() => render(currentProducts, currentPagination));
 });
 
+/**
+ * Select the page to display
+ */
+selectPage.addEventListener('change', event => {
+  fetchProducts(parseInt(event.target.value), selectShow.value)
+    .then(setCurrentProducts)
+    .then(() => render(currentProducts, currentPagination));
+});
+
 document.addEventListener('DOMContentLoaded', () =>
   fetchProducts()
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination))
 );
+
+
