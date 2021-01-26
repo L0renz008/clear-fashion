@@ -88,6 +88,18 @@ const renderPagination = pagination => {
 };
 
 /**
+ * Render brand selector
+ * @param  {Array} brands
+ */
+const renderBrands = brands => {
+  const options = Array.from(
+    {'length': brands.length},
+    (value, index) => `<option value="${brands[index]}">${brands[index]}</option>`
+  ).join('');
+
+  selectBrand.innerHTML = options;
+};
+/**
  * Render page selector
  * @param  {Object} pagination
  */
@@ -98,18 +110,12 @@ const renderIndicators = pagination => {
 };
 
 /**
- * Render brand selector
+ * Get list of brand from lists of products
+ * 
  */
-const renderBrand = brand => {
-  const {currentPage, brandCount} = brand;
-  const options = Array.from(
-    {'length': brandCount},
-    (value, brandName) => `<option value="${brandName}">${brandName}</option>`
-  ).join('');
-
-  selectBrand.innerHTML = options;
-  selectBrand.selectedIndex = currentPage - 1;
-};
+function getBrandsFromProducts (products) {
+  return [... new Set(products.map(product => product.brand))];
+}
 
 
 
@@ -117,6 +123,9 @@ const render = (products, pagination) => {
   renderProducts(products);
   renderPagination(pagination);
   renderIndicators(pagination);
+
+  const brands = getBrandsFromProducts(products);
+  renderBrands(brands);
 };
 
 /**
@@ -142,10 +151,18 @@ selectPage.addEventListener('change', event => {
     .then(() => render(currentProducts, currentPagination));
 });
 
+/**
+ * Select the brand to display
+ */
+selectBrand.addEventListener('change', event => {
+  fetchProducts(currentPagination.currentPage, selectShow.value)
+    .then(setCurrentProducts)
+    .then(() => render(currentProducts, currentPagination));
+});
+
 document.addEventListener('DOMContentLoaded', () =>
   fetchProducts()
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination))
 );
-
 
