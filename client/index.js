@@ -34,9 +34,14 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // I can find on these e-shops
 // 2. Log the variable
 
+const cheapestHopaal = 'https://hopaal.com/collections/t-shirts-homme/products/classique-forest-t-shirt-homme';
+console.log("The cheapest Hopaal t-shirt : " + cheapestHopaal);
 
+const cheapestLoom = 'https://www.loom.fr/products/le-t-shirt';
+console.log("The cheapest Loom t-shirt : " + cheapestLoom);
 
-
+const cheapestAdresseParis = 'https://adresse.paris/e-shop/4262-t-shirt-villette-1300000261968.html#/82-taille_fastmag-xs/751-couleur-gris_bleu_26';
+console.log("The cheapest Adresse Paris t-shirt : " + cheapestAdresseParis);
 
 /**
  * 👕
@@ -50,13 +55,23 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // 🎯 TODO: Number of products
 // 1. Create a variable and assign it the number of products
 // 2. Log the variable
-
+var nbOfProduct = marketplace.length;
+console.log("Number of product = " + nbOfProduct);
 
 // 🎯 TODO: Brands name
 // 1. Create a variable and assign it the list of brands name only
 // 2. Log the variable
 // 3. Log how many brands we have
-
+var brandsName = [];
+for (var i = 0; i < marketplace.length; i++)
+{
+  if(!brandsName.includes(marketplace[i].brand))
+  {
+    brandsName.push(marketplace[i].brand)
+  }
+}
+console.log("List of brand's name = " + brandsName);
+console.log("Number of brand = " + brandsName.length)
 
 // 🎯 TODO: Sort by price
 // 1. Create a function to sort the marketplace products by price

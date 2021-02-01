@@ -5,9 +5,10 @@
 let currentProducts = [];
 let currentPagination = {};
 
-// inititiqte selectors
+// inititiate selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
+const selectBrand = document.querySelector('#brand-select');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 
@@ -87,6 +88,18 @@ const renderPagination = pagination => {
 };
 
 /**
+ * Render brand selector
+ * @param  {Array} brands
+ */
+const renderBrands = brands => {
+  const options = Array.from(
+    {'length': brands.length},
+    (value, index) => `<option value="${brands[index]}">${brands[index]}</option>`
+  ).join('');
+
+  selectBrand.innerHTML = options;
+};
+/**
  * Render page selector
  * @param  {Object} pagination
  */
@@ -96,10 +109,23 @@ const renderIndicators = pagination => {
   spanNbProducts.innerHTML = count;
 };
 
+/**
+ * Get list of brand from lists of products
+ * 
+ */
+function getBrandsFromProducts (products) {
+  return [... new Set(products.map(product => product.brand))];
+}
+
+
+
 const render = (products, pagination) => {
   renderProducts(products);
   renderPagination(pagination);
   renderIndicators(pagination);
+
+  const brands = getBrandsFromProducts(products);
+  renderBrands(brands);
 };
 
 /**
@@ -116,8 +142,27 @@ selectShow.addEventListener('change', event => {
     .then(() => render(currentProducts, currentPagination));
 });
 
+/**
+ * Select the page to display
+ */
+selectPage.addEventListener('change', event => {
+  fetchProducts(parseInt(event.target.value), selectShow.value)
+    .then(setCurrentProducts)
+    .then(() => render(currentProducts, currentPagination));
+});
+
+/**
+ * Select the brand to display
+ */
+selectBrand.addEventListener('change', event => {
+  fetchProducts(currentPagination.currentPage, selectShow.value)
+    .then(setCurrentProducts)
+    .then(() => render(currentProducts, currentPagination));
+});
+
 document.addEventListener('DOMContentLoaded', () =>
   fetchProducts()
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination))
 );
+
