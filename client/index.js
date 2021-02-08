@@ -1,4 +1,7 @@
-// Invoking strict mode https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode#invoking_strict_mode
+// Invoking strict mode
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode#invoking_strict_mode
+/*global marketplace*/
+
 'use strict';
 
 console.log('🚀 This is it.');
@@ -12,13 +15,10 @@ const MY_FAVORITE_BRANDS = [{
 }, {
   'name': 'ADRESSE',
   'url': 'https://adresse.paris/'
-}]
+}];
 
 console.table(MY_FAVORITE_BRANDS);
 console.log(MY_FAVORITE_BRANDS[0]);
-
-
-
 
 
 /**
@@ -34,14 +34,9 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // I can find on these e-shops
 // 2. Log the variable
 
-const cheapestHopaal = 'https://hopaal.com/collections/t-shirts-homme/products/classique-forest-t-shirt-homme';
-console.log("The cheapest Hopaal t-shirt : " + cheapestHopaal);
+const cheapestTShirt = 'https://www.loom.fr/products/le-t-shirt';
+console.log(cheapestTShirt);
 
-const cheapestLoom = 'https://www.loom.fr/products/le-t-shirt';
-console.log("The cheapest Loom t-shirt : " + cheapestLoom);
-
-const cheapestAdresseParis = 'https://adresse.paris/e-shop/4262-t-shirt-villette-1300000261968.html#/82-taille_fastmag-xs/751-couleur-gris_bleu_26';
-console.log("The cheapest Adresse Paris t-shirt : " + cheapestAdresseParis);
 
 /**
  * 👕
@@ -55,48 +50,59 @@ console.log("The cheapest Adresse Paris t-shirt : " + cheapestAdresseParis);
 // 🎯 TODO: Number of products
 // 1. Create a variable and assign it the number of products
 // 2. Log the variable
-var nbOfProduct = marketplace.length;
-console.log("Number of product = " + nbOfProduct);
+
+const numberOfProducts = marketplace.length;
+console.log(numberOfProducts);
 
 // 🎯 TODO: Brands name
 // 1. Create a variable and assign it the list of brands name only
 // 2. Log the variable
 // 3. Log how many brands we have
-var brandsName = [];
-for (var i = 0; i < marketplace.length; i++)
-{
-  if(!brandsName.includes(marketplace[i].brand))
-  {
-    brandsName.push(marketplace[i].brand)
+
+const brandNames = [];
+for (const product of marketplace) {
+  if (!(brandNames.includes(product.brand))) {
+    brandNames.push(product.brand);
   }
 }
-console.log("List of brand's name = " + brandsName);
-console.log("Number of brand = " + brandsName.length)
+console.log(brandNames);
+
 
 // 🎯 TODO: Sort by price
 // 1. Create a function to sort the marketplace products by price
-// 2. Create a variable and assign it the list of products by price from lowest to highest
-// 3. Log the variable
+// 2. Create a variable and assign it the list of products by price from lowest
+// to highest 3. Log the variable
+
+const sortPrice = (a, b) => a.price - b.price;
+
+const sortedByPrice = [...marketplace].sort(sortPrice);
+console.log(sortedByPrice);
 
 
 // 🎯 TODO: Sort by date
 // 1. Create a function to sort the marketplace objects by products date
-// 2. Create a variable and assign it the list of products by date from recent to old
-// 3. Log the variable
+// 2. Create a variable and assign it the list of products by date from recent
+// to old 3. Log the variable
 
+const sortDate = (a, b) => a.date < b.date ? -1 : a.date === b.date ? 0 : 1;
+
+const sortedByDate = [...marketplace].sort(sortDate).reverse();
+console.log(sortedByDate);
 
 // 🎯 TODO: Filter a specific price range
 // 1. Filter the list of products between 50€ and 100€
 // 2. Log the list
+
+console.log(marketplace.filter(product =>
+  product.price >= 50 && product.price <= 100));
 
 
 // 🎯 TODO: Average Basket
 // 1. Determine the average basket of the marketplace
 // 2. Log the average
 
-
-
-
+console.log(marketplace.reduce((total, next) =>
+  total + next.price, 0) / numberOfProducts);
 
 /**
  * 🏎
@@ -121,19 +127,31 @@ console.log("Number of brand = " + brandsName.length)
 // 2. Log the variable
 // 3. Log the number of products by brands
 
+const brands = {};
+for (const brand of brandNames) {
+  brands[brand] = [];
+}
+for (const product of marketplace) {
+  brands[product.brand].push(product);
+}
+console.log(brands);
+
 
 // 🎯 TODO: Sort by price for each brand
 // 1. For each brand, sort the products by price, from highest to lowest
 // 2. Log the sort
 
+Object.keys(brands).forEach(key => {
+  console.log([...brands[key]].sort(sortPrice).reverse());
+});
 
 // 🎯 TODO: Sort by date for each brand
 // 1. For each brand, sort the products by date, from old to recent
 // 2. Log the sort
 
-
-
-
+for (const key of Object.keys(brands)) {
+  console.log([...brands[key]].sort(sortDate));
+}
 
 /**
  * 💶
@@ -144,10 +162,15 @@ console.log("Number of brand = " + brandsName.length)
 
 // 🎯 TODO: Compute the p90 price value
 // 1. Compute the p90 price value of each brand
-// The p90 value (90th percentile) is the lower value expected to be exceeded in 90% of the products
+// The p90 value (90th percentile) is the lower value expected to be exceeded
+// in 90% of the products
 
-
-
+Object.keys(brands).forEach(key => {
+  const brand = brands[key];
+  brand.sort(sortPrice);
+  const pos = Math.floor((brand.length - 1) * 0.9) + 1;
+  console.log(brand[pos].price);
+});
 
 
 /**
@@ -155,7 +178,8 @@ console.log("Number of brand = " + brandsName.length)
  * Cool for your effort.
  * It's almost done
  * Now we manipulate the variable `COTELE_PARIS`
- * `COTELE_PARIS` is a list of products from https://coteleparis.com/collections/tous-les-produits-cotele
+ * `COTELE_PARIS` is a list of products from
+ * https://coteleparis.com/collections/tous-les-produits-cotele
  * 🧥
  */
 
@@ -216,16 +240,32 @@ const COTELE_PARIS = [
     uuid: 'f48810f1-a822-5ee3-b41a-be15e9a97e3f',
     released: '2020-12-21'
   }
-]
+];
 
 // 🎯 TODO: New released products
 // // 1. Log if we have new products only (true or false)
 // // A new product is a product `released` less than 2 weeks.
 
+for (const product of COTELE_PARIS) {
+  if ((Date.parse(product.released) - Date.now()) / 1000 / 3600 / 24 < 14) {
+    console.log(true);
+    break;
+  }
+  console.log(false);
+}
+
 
 // 🎯 TODO: Reasonable price
 // // 1. Log if coteleparis is a reasonable price shop (true or false)
 // // A reasonable price if all the products are less than 100€
+
+for (const product of COTELE_PARIS) {
+  if (product.price >= 100) {
+    console.log(false);
+    break;
+  }
+  console.log(true);
+}
 
 
 // 🎯 TODO: Find a specific product
@@ -258,10 +298,8 @@ blueJacket = {
   'uuid': 'b4b05398-fee0-4b31-90fe-a794d2ccfaaa'
 };
 
-// 3. Update `jacket` property with `favorite` to true WITHOUT changing blueJacket properties
-
-
-
+// 3. Update `jacket` property with `favorite` to true WITHOUT changing
+// blueJacket properties
 
 
 /**
