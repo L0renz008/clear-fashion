@@ -4,12 +4,22 @@ const dedicatedbrand = require('./sources/dedicatedbrand');
 const mudjeans = require('./sources/mudjeansbrand');
 const adresse = require('./sources/adressebrand');
 
-async function sandbox (eshop = brands[1].url) {
+async function sandbox (eshop = brands[0].url) {
   try {
-    console.log(`🕵️‍♀️  browsing ${eshop} source`);
+    const pages = await dedicatedbrand.getPages(eshop);
+    console.log(`🛍️ ${pages.length} found`);
+    console.log(pages);
+    if(!eshop) {
+      eshop = pages[Math.floor(Math.random() * pages.length)];
+    }
 
-    const products = await mudjeans.scrape(eshop);
 
+
+    console.log(`🕵️‍♀️  browsing ${pages[3]} source`);
+
+    const products = await dedicatedbrand.scrape(pages[3]);
+    
+    console.log(`${products.length} items found`);
     console.log(products);
     console.log('done');
     process.exit(0);
