@@ -4,6 +4,11 @@
 // current products on the page
 let currentProducts = [];
 let currentPagination = {};
+let currentSort = '';
+const currentFilters = {
+  'recently' : 'off',
+  'reasonable' : 'off'
+}
 
 // inititiate selectors
 const selectShow = document.querySelector('#show-select');
@@ -11,6 +16,9 @@ const selectPage = document.querySelector('#page-select');
 const selectBrand = document.querySelector('#brand-select');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
+const checkRecently = document.querySelector('#recently-released');
+const checkReasonable = document.querySelector('#reasonable-price');
+const selectSort = document.querySelector('#sort-select');
 
 /**
  * Set global value
@@ -88,17 +96,32 @@ const renderPagination = pagination => {
 };
 
 /**
+ * Get list of brand from lists of products
+ * @param {Array} products
+ */
+function getBrandsFromProducts (products) {
+  const brands = ['']
+  for (const product of products){
+    if (!(brands.includes(product.brand))) {
+      brands.push(product.brand);
+    }
+  }
+  return brands;
+}
+
+/**
  * Render brand selector
  * @param  {Array} brands
  */
 const renderBrands = brands => {
   const options = Array.from(
-    {'length': brands.length},
-    (value, index) => `<option value="${brands[index]}">${brands[index]}</option>`
+    brands,
+    value => `<option value="${value}">${value}</option>`
   ).join('');
 
   selectBrand.innerHTML = options;
 };
+
 /**
  * Render page selector
  * @param  {Object} pagination
@@ -110,16 +133,67 @@ const renderIndicators = pagination => {
 };
 
 /**
- * Get list of brand from lists of products
- * 
+ * Render list of product sorted by brand
+ * @param {Array} products
+ * @param {Array} brand
  */
-function getBrandsFromProducts (products) {
-  return [... new Set(products.map(product => product.brand))];
+const renderProductByBrand = (products, brand) => {
+  const sort_product = [];
+  for (var i = 0; i < products.length; i++)
+  {
+    if(products[i]["brand"] == brand){
+      sort_product.push(products[i]);
+    }
+    
+  }
+  if(brand == ""){
+    renderProducts(products);
+  }
+  else{
+    renderProducts(sort_product);
+  }
+  
+}
+
+/**
+ * Render list of products by filters
+ * @param  {Array} products
+ */
+const filterProducts = products => {
+  if (currentFilters['recently'] === 'on') {
+    products = products.filter(product =>
+      (Date.now() - Date.parse(product.released)) / 1000 / 3600 / 24 < 60);
+  }
+  if (currentFilters['reasonable'] === 'on') {
+    products = products.filter(product => product.price < 100);
+  }
+  renderProductByBrand(products);
+
+  return products;
+};
+
+
+const sortProduct = (products) => {
+  if (currentSort == "price-asc"){
+    products.sort((a, b) => a.price - b.price);
+  }
+  else if (currentSort == "price-desc"){
+    products.sort((a, b) => b.price - a.price);
+  }
+  else if (currentSort == "date-asc"){
+    products.sort((a, b) => a.released < b.released)
+  }
+  else if (currentSort == "date-desc"){
+    products.sort((a, b) => b.released < a.released)
+  }
 }
 
 
 
+
 const render = (products, pagination) => {
+  products = filterProducts(products);
+  sortProduct(products);
   renderProducts(products);
   renderPagination(pagination);
   renderIndicators(pagination);
@@ -155,10 +229,27 @@ selectPage.addEventListener('change', event => {
  * Select the brand to display
  */
 selectBrand.addEventListener('change', event => {
-  fetchProducts(currentPagination.currentPage, selectShow.value)
-    .then(setCurrentProducts)
-    .then(() => render(currentProducts, currentPagination));
+  renderProductByBrand(currentProducts, event.target.value)
 });
+
+checkRecently.addEventListener('change', () => {
+  currentFilters['recently'] =
+    currentFilters['recently'] === 'on' ? 'off' : 'on';
+  render(currentProducts, currentPagination);
+});
+
+checkReasonable.addEventListener('change', () => {
+  currentFilters['reasonable'] =
+    currentFilters['reasonable'] === 'on' ? 'off' : 'on';
+  render(currentProducts, currentPagination);
+});
+
+selectSort.addEventListener('change', event => {
+  currentSort = event.target.value;
+  render(currentProducts, currentPagination);
+});
+
+
 
 document.addEventListener('DOMContentLoaded', () =>
   fetchProducts()
