@@ -1,15 +1,14 @@
 /* eslint-disable no-console, no-process-exit */
-const dedicatedbrand = require('./sites/dedicatedbrand');
+const dedicatedbrand = require('./sources/dedicatedbrand');
+const mudjeansbrand = require('./sources/mudjeans');
+const adressebrand = require('./sources/adresseparis');
 const loom = require('./sites/loom');
-const db = require('./db');
+const db = require('./db/index');
 
-async function sandbox () {
+async function sandbox (dedicated = 'https://www.dedicatedbrand.com', mudjeans = 'https://mudjeans.eu', adresse = 'https://adresse.paris') {
   try {
     let products = [];
-    let pages = [
-      'https://www.dedicatedbrand.com/en/men/basics',
-      'https://www.dedicatedbrand.com/en/men/sale'
-    ];
+    let pages = await dedicatedbrand.getPages(dedicated);
 
     console.log(`🕵️‍♀️  browsing ${pages.length} pages with for...of`);
 
@@ -17,7 +16,37 @@ async function sandbox () {
     for (let page of pages) {
       console.log(`🕵️‍♀️  scraping ${page}`);
 
-      let results = await dedicatedbrand.scrape(page);
+      let results = await dedicatedbrand.scrape_products(page);
+
+      console.log(`👕 ${results.length} products found`);
+
+      products.push(results);
+    }
+
+    pages = await mudjeansbrand.getPages(mudjeans);
+
+    console.log(`🕵️‍♀️  browsing ${pages.length} pages with for...of`);
+
+    // Way 1 with for of: we scrape page by page
+    for (let page of pages) {
+      console.log(`🕵️‍♀️  scraping ${page}`);
+
+      let results = await mudjeansbrand.scrape_products(page);
+
+      console.log(`👕 ${results.length} products found`);
+
+      products.push(results);
+    }
+
+    pages = await adressebrand.getPages(adresse);
+
+    console.log(`🕵️‍♀️  browsing ${pages.length} pages with for...of`);
+
+    // Way 1 with for of: we scrape page by page
+    for (let page of pages) {
+      console.log(`🕵️‍♀️  scraping ${page}`);
+
+      let results = await adressebrand.scrape_products(page);
 
       console.log(`👕 ${results.length} products found`);
 
