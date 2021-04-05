@@ -60,13 +60,12 @@ module.exports.insert = async products => {
  * @param  {Array}  query
  * @return {Array}
  */
-module.exports.find = async (query, limit, sorting, page) => {
+module.exports.find = async (query, limit, page) => {
   try {
     const db = await getDB();
     const collection = db.collection(MONGODB_COLLECTION);
-    const number_doc = await collection.find(query).sort({price:sorting}).count()
-    const result = await collection.find(query).sort({price:sorting, _id:1}).limit(limit).skip((page - 1) * limit).toArray();
-
+    const result = await collection.find(query).sort({price:1, _id:1}).limit(limit).skip((page - 1) * limit).toArray();
+    const number_doc = await collection.countDocuments();
     return [result, number_doc];
   } catch (error) {
     console.error('🚨 collection.find...', error);
