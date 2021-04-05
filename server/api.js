@@ -19,7 +19,7 @@ app.get('/', (request, response) => {
   response.send({'ack': true});
 });
 
-app.get('/products/search', async(request, response) => {
+app.get('/products', async(request, response) => {
   let brand = request.query.brand || null;
   let price = parseInt(request.query.price) || null;
   let limit = parseInt(request.query.limit) || 12;
