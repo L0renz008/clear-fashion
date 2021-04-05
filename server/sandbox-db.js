@@ -80,6 +80,9 @@ async function sandbox (dedicated = 'https://www.dedicatedbrand.com', mudjeans =
 
     console.log('\n');
 
+    products = new Set(products);
+    products = [...products];
+
     const result = await db.insert(products);
 
     console.log(`💽  ${result.insertedCount} inserted products`);
