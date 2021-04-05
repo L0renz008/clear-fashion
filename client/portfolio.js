@@ -162,7 +162,7 @@ const renderProductByBrand = (products, brand) => {
 const filterProducts = products => {
   if (currentFilters['recently'] === 'on') {
     products = products.filter(product =>
-      (Date.now() - Date.parse(product.released)) / 1000 / 3600 / 24 < 60);
+      (Date.now() - Date.parse(product.released)) / 1000 / 3600 / 24 < 365);
   }
   if (currentFilters['reasonable'] === 'on') {
     products = products.filter(product => product.price < 100);
