@@ -60,11 +60,11 @@ module.exports.insert = async products => {
  * @param  {Array}  query
  * @return {Array}
  */
-module.exports.find = async (query, limit, page) => {
+module.exports.find = async (query, limit = 12, page = 1) => {
   try {
     const db = await getDB();
     const collection = db.collection(MONGODB_COLLECTION);
-    const result = await collection.find(query).sort({price:1, _id:1}).limit(limit).skip((page - 1) * limit).toArray();
+    const result = await collection.find(query).sort({price:1}).limit(limit).skip((page - 1) * limit).toArray();
     const number_doc = await collection.countDocuments();
     return [result, number_doc];
   } catch (error) {
@@ -99,28 +99,28 @@ module.exports.length = async() => {
   }
 };
 
-module.exports.findByBrand = async (brand = null, price = null, limit = 12) => {
+module.exports.findByBrand = async (brand = null, price = null, limit = 12, page = 1) => {
   try {
     const db = await getDB();
     const collection = db.collection(MONGODB_COLLECTION);
     if (brand == null && price == null)
     {
-      const result = await collection.find({'price':{$gte:0}}).sort({'price':1}).limit(limit).toArray();
+      const result = await collection.find({'price':{$gte:0}}).sort({'price':1}).limit(limit).skip((page - 1) * limit).toArray();
       return result;
     }
     else if (price == null)
     {
-      const result = await collection.find({'brand':brand, 'price':{$gte:0}}).sort({'price':1}).limit(limit).toArray();
+      const result = await collection.find({'brand':brand, 'price':{$gte:0}}).sort({'price':1}).limit(limit).skip((page - 1) * limit).toArray();
       return result;
     }
     else if (brand == null)
     {
-      const result = await collection.find({'price':{$lte:price, $gte:0}}).sort({'price':1}).limit(limit).toArray();
+      const result = await collection.find({'price':{$lte:price, $gte:0}}).sort({'price':1}).limit(limit).skip((page - 1) * limit).toArray();
       return result;
     }
     else
     {
-      const result = await collection.find({'brand':brand, 'price':{$lte:price, $gte:0}}).sort({'price':1}).limit(limit).toArray();
+      const result = await collection.find({'brand':brand, 'price':{$lte:price, $gte:0}}).sort({'price':1}).limit(limit).skip((page - 1) * limit).toArray();
       return result;
     }
     
