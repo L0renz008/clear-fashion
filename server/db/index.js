@@ -73,6 +73,20 @@ module.exports.find = async (query, limit, page) => {
   }
 };
 
+module.exports.findById = async id => {
+  try{
+    const db = await getDB();
+    const collection = db.collection(MONGODB_COLLECTION);
+    const result = await collection.find({'_id':id}).toArray();
+
+    return result;
+    }
+    catch (error) {
+    console.error('🚨 collection.find...', error);
+    return null;
+  }  
+}
+
 module.exports.length = async() => {
   try {
     const db = await getDB();
@@ -85,12 +99,31 @@ module.exports.length = async() => {
   }
 };
 
-module.exports.brands = async brand => {
+module.exports.findByBrand = async (brand = null, price = null, limit = 12) => {
   try {
     const db = await getDB();
     const collection = db.collection(MONGODB_COLLECTION);
-    const result = await collection.find({'brand':brand})
-    return result;
+    if (brand == null && price == null)
+    {
+      const result = await collection.find({'price':{$gte:0}}).sort({'price':1}).limit(limit).toArray();
+      return result;
+    }
+    else if (price == null)
+    {
+      const result = await collection.find({'brand':brand, 'price':{$gte:0}}).sort({'price':1}).limit(limit).toArray();
+      return result;
+    }
+    else if (brand == null)
+    {
+      const result = await collection.find({'price':{$lte:price, $gte:0}}).sort({'price':1}).limit(limit).toArray();
+      return result;
+    }
+    else
+    {
+      const result = await collection.find({'brand':brand, 'price':{$lte:price, $gte:0}}).sort({'price':1}).limit(limit).toArray();
+      return result;
+    }
+    
   } catch(e) {
     console.error('🚨 collection.find...', error);
     return null;
