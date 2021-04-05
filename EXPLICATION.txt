@@ -1,0 +1,6 @@
+À l'intention de M. AZZOUT.
+
+Je n'ai malheureusement pas réussi à produire un rendu des pages correct avec la base de donnée mongoDB.
+Tous fonctionnaient pour le mieux en local mais l'intégration de la base de donnée m'a causé des problèmes sur le rendu des pages.
+
+En vous souhaitant une bonne lecture de code.
