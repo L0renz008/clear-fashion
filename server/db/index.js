@@ -66,7 +66,7 @@ module.exports.find = async (query, limit = 12, page = 1) => {
     const collection = db.collection(MONGODB_COLLECTION);
     const result = await collection.find(query).sort({price:1}).limit(limit).skip((page - 1) * limit).toArray();
     const number_doc = await collection.countDocuments();
-    return (result, number_doc);
+    return result;
   } catch (error) {
     console.error('🚨 collection.find...', error);
     return null;
